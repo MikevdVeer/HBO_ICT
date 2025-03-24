@@ -1,5 +1,5 @@
 class GameMap {
-    constructor(width, height, tileSize = 32) {
+    constructor(width, height, tileSize = 16) {
         this.width = width;
         this.height = height;
         this.tileSize = tileSize;
@@ -25,7 +25,7 @@ class GameMap {
 
     generateMap() {
         // Create a complete map layout with interesting patterns
-        // 0: grass, 1: stone, 2: house
+        // 0: grass, 1: stone, 2: 
         this.tiles = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
