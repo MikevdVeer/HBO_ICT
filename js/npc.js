@@ -47,6 +47,6 @@ class NPC {
         ctx.fillStyle = '#ffffff';
         ctx.font = '12px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(this.name, this.x + this.width / 2, this.y - 5);
+        ctx.fillText(this.name, this.x + this.width / 2, this.y - 3);
     }
 } 

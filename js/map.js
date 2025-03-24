@@ -5,31 +5,48 @@ class GameMap {
         this.tileSize = tileSize;
         this.tiles = [];
         
+        // Load tile images
+        this.tileImages = {
+            GRASS: new Image(),
+            STONE: new Image(),
+        };
+        
+        this.tileImages.GRASS.src = 'assets/tiles/grass.png';
+        this.tileImages.STONE.src = 'assets/tiles/stone.png';
+        
         // Tile types
         this.TILE_TYPES = {
-            GRASS: { color: '#4a9c2d', walkable: true },
-            WATER: { color: '#4287f5', walkable: false },
-            SAND: { color: '#e3d85b', walkable: true },
-            STONE: { color: '#808080', walkable: false }
+            GRASS: { type: 'GRASS', walkable: true },
+            STONE: { type: 'STONE', walkable: false },
         };
 
         this.generateMap();
     }
 
     generateMap() {
-        // Create a simple map layout
-        // 0: grass, 1: water, 2: sand, 3: stone
+        // Create a complete map layout with interesting patterns
+        // 0: grass, 1: stone, 2: house
         this.tiles = [
-            [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 1, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0],
-            [0, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0],
-            [0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 2, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 2, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1, 1, 2, 2, 0],
-            [0, 0, 3, 3, 0, 0, 0, 0, 0, 2, 2, 2, 2, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+            
         ];
     }
 
@@ -53,9 +70,12 @@ class GameMap {
     render(ctx) {
         for (let y = 0; y < this.tiles.length; y++) {
             for (let x = 0; x < this.tiles[y].length; x++) {
-                const tileType = Object.values(this.TILE_TYPES)[this.tiles[y][x]];
-                ctx.fillStyle = tileType.color;
-                ctx.fillRect(
+                const tileValue = this.tiles[y][x];
+                const tileType = Object.values(this.TILE_TYPES)[tileValue];
+                const image = this.tileImages[tileType.type];
+                
+                ctx.drawImage(
+                    image,
                     x * this.tileSize,
                     y * this.tileSize,
                     this.tileSize,
