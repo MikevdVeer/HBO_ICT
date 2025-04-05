@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBO-ICT De Haagse Hogeschool - Discover Your Path</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div id="main-menu" class="screen active">
+            <div class="logo-container">
+                <img src="img/download.png" class="logo">
+            </div>
+            <h1>HBO-ICT Challenge</h1>
+            <p>Test your skills and discover if HBO-ICT at De Haagse Hogeschool is right for you!</p>
+            <button id="start-button">Start Challenge</button>
+        </div>
+
+        <div id="level-select" class="screen">
+            <h2>Choose Your Challenge</h2>
+            <div class="level-buttons">
+                <button class="level-button" data-level="1">Level 1: HBO-ICT Basics</button>
+                <button class="level-button" data-level="2">Level 2: HBO-ICT Specializations</button>
+                <button class="level-button" data-level="3">Level 3: HBO-ICT Career Paths</button>
+            </div>
+            <button class="back-button">Back to Menu</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div id="level-title">Level 1</div>
+            <div id="question-container">
+                <div id="question-text">Question goes here</div>
+                <div id="answer-options"></div>
+            </div>
+            <div id="minigame-container"></div>
+            <div id="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            <button class="back-button">Exit Challenge</button>
+        </div>
+
+        <div id="level-complete" class="screen">
+            <h2>Challenge Complete!</h2>
+            <div id="score-display">Score: 0</div>
+            <div id="feedback"></div>
+            <div class="cta-container">
+                <p>Want to learn more about HBO-ICT at De Haagse Hogeschool?</p>
+                <a href="https://www.dehaagsehogeschool.nl/opleidingen/hbo-bachelor/hbo-ict" target="_blank" class="cta-button">Visit HBO-ICT Website</a>
+            </div>
+            <button id="next-level-button">Next Challenge</button>
+            <button class="back-button">Challenge Select</button>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html> 
