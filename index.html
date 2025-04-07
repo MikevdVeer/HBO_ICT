@@ -17,6 +17,14 @@
             <button id="start-button">Start Challenge</button>
         </div>
 
+        <div id="name-input" class="screen">
+            <h2>Welcome to the HBO-ICT Challenge!</h2>
+            <p>Please enter your name to begin:</p>
+            <input type="text" id="user-name" placeholder="Your name" maxlength="50">
+            <button id="start-quiz-btn">Start Quiz</button>
+            <button class="back-button">Back to Menu</button>
+        </div>
+
         <div id="game-screen" class="screen">
             <div id="question-container">
                 <div id="question-text">Question goes here</div>
@@ -29,12 +37,95 @@
             <div id="progress-bar">
                 <div id="progress-fill"></div>
             </div>
-            <button class="back-button">Exit Challenge</button>
+            <button class="back-button">Exit</button>
         </div>
 
-        <div id="level-complete" class="screen">
+        <div id="level-complete" class="screen" style="height: 100%;">
             <h2>Challenge Complete!</h2>
             <div id="feedback"></div>
+            
+            <!-- Minigames Section -->
+            <div id="minigames-section">
+                <h3>Try some challenges related to your recommended career path!</h3>
+                
+                <!-- Software Engineering Minigame -->
+                <div id="software-minigame" class="minigame-container">
+                    <h4 class="minigame-title">Code Ordering Challenge</h4>
+                    <p class="minigame-instructions">Arrange these lines of code in the correct order to create a working function.</p>
+                    <div class="minigame-content">
+                        <div id="code-puzzle" class="code-puzzle-container"></div>
+                        <div id="code-solution" class="drop-zone">Drop code lines here</div>
+                    </div>
+                    <div class="minigame-button-container">
+                        <button id="check-code-btn" class="minigame-button">Check Solution</button>
+                    </div>
+                    <div id="code-feedback" class="minigame-feedback"></div>
+                </div>
+                
+                <!-- Innovative Development Minigame -->
+                <div id="innovation-minigame" class="minigame-container">
+                    <h4 class="minigame-title">Creative Connections Challenge</h4>
+                    <p class="minigame-instructions">Combine these concepts to create an innovative solution.</p>
+                    <div class="minigame-content">
+                        <div id="innovation-concepts" class="creative-thinking-container"></div>
+                        <div id="innovation-solution" class="drop-zone">
+                            <p>Drag 3 concepts here to create your innovation</p>
+                        </div>
+                    </div>
+                    <div class="minigame-button-container">
+                        <button id="submit-innovation-btn" class="minigame-button">Submit Innovation</button>
+                    </div>
+                    <div id="innovation-feedback" class="minigame-feedback"></div>
+                </div>
+                
+                <!-- Network & Systems Engineering Minigame -->
+                <div id="network-minigame" class="minigame-container">
+                    <h4 class="minigame-title">Network Configuration Challenge</h4>
+                    <p class="minigame-instructions">Connect the devices to create a working network.</p>
+                    <div class="minigame-content">
+                        <div id="network-puzzle" class="network-puzzle-container"></div>
+                    </div>
+                    <div class="minigame-button-container">
+                        <button id="check-network-btn" class="minigame-button">Check Configuration</button>
+                    </div>
+                    <div id="network-feedback" class="minigame-feedback"></div>
+                </div>
+                
+                <!-- Business & Data Management Minigame -->
+                <div id="data-minigame" class="minigame-container">
+                    <h4 class="minigame-title">Data Sorting Challenge</h4>
+                    <p class="minigame-instructions">Sort these data items into the correct categories.</p>
+                    <div class="minigame-content">
+                        <div id="data-items" class="data-sorting-container"></div>
+                        <div class="data-categories">
+                            <div id="structured-data" class="drop-zone">
+                                <h5>Structured Data</h5>
+                            </div>
+                            <div id="unstructured-data" class="drop-zone">
+                                <h5>Unstructured Data</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="minigame-button-container">
+                        <button id="check-data-btn" class="minigame-button">Check Sorting</button>
+                    </div>
+                    <div id="data-feedback" class="minigame-feedback"></div>
+                </div>
+                
+                <!-- Security Management Minigame -->
+                <div id="security-minigame" class="minigame-container">
+                    <h4 class="minigame-title">Security Vulnerability Challenge</h4>
+                    <p class="minigame-instructions">Identify the security vulnerabilities in this application.</p>
+                    <div class="minigame-content">
+                        <div id="security-items" class="security-challenge-container"></div>
+                    </div>
+                    <div class="minigame-button-container">
+                        <button id="check-security-btn" class="minigame-button">Check Vulnerabilities</button>
+                    </div>
+                    <div id="security-feedback" class="minigame-feedback"></div>
+                </div>
+            </div>
+            
             <div class="cta-container">
                 <p>Want to learn more about HBO-ICT at De Haagse Hogeschool?</p>
                 <a href="https://www.dehaagsehogeschool.nl/opleidingen/hbo-bachelor/hbo-ict" target="_blank" class="cta-button">Visit HBO-ICT Website</a>

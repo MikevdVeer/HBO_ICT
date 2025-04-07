@@ -106,9 +106,11 @@ const gameData = {
 // Game state
 let currentQuestionIndex = 0;
 let userResponses = [];
+let userName = '';
 
 // DOM Elements
 const mainMenu = document.getElementById('main-menu');
+const nameInputScreen = document.getElementById('name-input');
 const gameScreen = document.getElementById('game-screen');
 const completionScreen = document.getElementById('level-complete');
 const questionText = document.getElementById('question-text');
@@ -118,9 +120,23 @@ const feedbackElem = document.getElementById('feedback');
 const explanationContainer = document.getElementById('explanation-container');
 const explanationTextarea = document.getElementById('explanation-textarea');
 const submitExplanationBtn = document.getElementById('submit-explanation-btn');
+const userNameInput = document.getElementById('user-name');
+const startQuizBtn = document.getElementById('start-quiz-btn');
 
 // Event Listeners
-document.getElementById('start-button').addEventListener('click', startGame);
+document.getElementById('start-button').addEventListener('click', () => {
+    showScreen(nameInputScreen);
+});
+
+startQuizBtn.addEventListener('click', () => {
+    userName = userNameInput.value.trim();
+    if (userName) {
+        startGame();
+    } else {
+        alert('Please enter your name to continue');
+    }
+});
+
 document.querySelectorAll('.back-button').forEach(button => {
     button.addEventListener('click', handleBackButton);
 });
@@ -207,6 +223,9 @@ function showQuestion() {
         optionElement.addEventListener('click', () => selectAnswer(index, option));
         answerOptions.appendChild(optionElement);
     });
+    
+    // Animate the answer options
+    animateAnswerOptions();
     
     // Hide explanation container initially
     explanationContainer.style.display = 'none';
@@ -305,22 +324,17 @@ function moveToNextQuestion() {
 }
 
 function completeGame() {
-    // Generate feedback based on responses
-    let feedback = generateFeedback();
+    // Save results to sessionStorage
+    saveResultsToStorage();
     
-    // Save results to JSON file
-    saveResultsToJson();
-    
-    // Display feedback
-    feedbackElem.innerHTML = feedback;
-    
-    // Show completion screen
-    showScreen(completionScreen);
+    // Redirect to results page
+    window.location.href = 'results.html';
 }
 
-// Save quiz results to a JSON file
-function saveResultsToJson() {
+// Save quiz results to sessionStorage
+function saveResultsToStorage() {
     const results = {
+        name: userName,
         answers: userResponses.map(response => ({
             question: response.question,
             answer: response.answer,
@@ -333,17 +347,8 @@ function saveResultsToJson() {
         }))
     };
     
-    // Create a JSON string
-    const jsonString = JSON.stringify(results, null, 2);
-    
-    // Create a Blob containing the JSON data
-    const blob = new Blob([jsonString], { type: "application/json" });
-    
-    // Create a download link and trigger the download
-    const downloadLink = document.createElement("a");
-    downloadLink.href = URL.createObjectURL(blob);
-    downloadLink.download = "it_career_quiz_results.json";
-    downloadLink.click();
+    // Save to sessionStorage
+    sessionStorage.setItem('quizResults', JSON.stringify(results));
 }
 
 // Get the recommended career path
@@ -359,7 +364,7 @@ function generateFeedback() {
     const recommendedCareer = getRecommendedCareer();
     
     // Generate personalized feedback
-    let feedback = '<h3>Your HBO-ICT Career Profile</h3>';
+    let feedback = `<h3>${userName}'s HBO-ICT Career Profile</h3>`;
     
     // Add career recommendation
     feedback += '<div class="career-recommendation">';
@@ -375,9 +380,9 @@ function generateFeedback() {
     // Sort career paths by score (descending)
     const sortedPaths = [...gameData.careerPaths].sort((a, b) => b.matchScore - a.matchScore);
     
-    sortedPaths.forEach(path => {
+    sortedPaths.forEach((path, index) => {
         const percentage = (path.matchScore / gameData.questions.length) * 100;
-        feedback += `<div class="chart-bar-container">
+        feedback += `<div class="chart-bar-container" style="--result-index: ${index}">
             <div class="chart-label">${path.title}</div>
             <div class="chart-bar-wrapper">
                 <div class="chart-bar" style="width: ${percentage}%"></div>
@@ -520,4 +525,549 @@ additionalStyles.textContent = `
     }
 `;
 
-document.head.appendChild(additionalStyles); 
+document.head.appendChild(additionalStyles);
+
+// Add animation to the answer options
+function animateAnswerOptions() {
+    const options = answerOptions.querySelectorAll('.answer-option');
+    options.forEach((option, index) => {
+        option.style.setProperty('--option-index', index);
+    });
+}
+
+// Minigames functionality
+function initializeMinigames() {
+    const recommendedCareer = getRecommendedCareer();
+    
+    // Hide all minigames first
+    document.querySelectorAll('.minigame-container').forEach(container => {
+        container.classList.remove('active');
+    });
+    
+    // Show the minigame related to the recommended career path
+    let minigameContainer;
+    
+    switch(recommendedCareer.id) {
+        case 'software-engineering':
+            minigameContainer = document.getElementById('software-minigame');
+            initSoftwareMinigame();
+            break;
+        case 'innovative-development':
+            minigameContainer = document.getElementById('innovation-minigame');
+            initInnovationMinigame();
+            break;
+        case 'network-systems':
+            minigameContainer = document.getElementById('network-minigame');
+            initNetworkMinigame();
+            break;
+        case 'business-data':
+            minigameContainer = document.getElementById('data-minigame');
+            initDataMinigame();
+            break;
+        case 'security-management':
+            minigameContainer = document.getElementById('security-minigame');
+            initSecurityMinigame();
+            break;
+    }
+    
+    // Show the corresponding minigame
+    if (minigameContainer) {
+        minigameContainer.classList.add('active');
+    }
+}
+
+// Software Engineering Minigame
+function initSoftwareMinigame() {
+    const codePuzzle = document.getElementById('code-puzzle');
+    const codeSolution = document.getElementById('code-solution');
+    const checkCodeBtn = document.getElementById('check-code-btn');
+    const codeFeedback = document.getElementById('code-feedback');
+    
+    // Code lines for the puzzle
+    const codeLines = [
+        'function calculateTotal(items) {',
+        '    let total = 0;',
+        '    for (let i = 0; i < items.length; i++) {',
+        '        total += items[i].price;',
+        '    }',
+        '    return total;',
+        '}'
+    ];
+    
+    // Shuffle code lines
+    const shuffledLines = [...codeLines].sort(() => Math.random() - 0.5);
+    
+    // Create and append code lines to the puzzle container
+    codePuzzle.innerHTML = '';
+    shuffledLines.forEach(line => {
+        const codeLineElem = document.createElement('div');
+        codeLineElem.className = 'code-line';
+        codeLineElem.textContent = line;
+        codeLineElem.draggable = true;
+        
+        // Add drag events
+        codeLineElem.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', line);
+            codeLineElem.classList.add('dragging');
+        });
+        
+        codeLineElem.addEventListener('dragend', e => {
+            codeLineElem.classList.remove('dragging');
+        });
+        
+        codePuzzle.appendChild(codeLineElem);
+    });
+    
+    // Set up drop zone
+    codeSolution.innerHTML = 'Drop code lines here';
+    
+    codeSolution.addEventListener('dragover', e => {
+        e.preventDefault();
+        codeSolution.classList.add('hover');
+    });
+    
+    codeSolution.addEventListener('dragleave', () => {
+        codeSolution.classList.remove('hover');
+    });
+    
+    codeSolution.addEventListener('drop', e => {
+        e.preventDefault();
+        codeSolution.classList.remove('hover');
+        
+        const data = e.dataTransfer.getData('text/plain');
+        const draggedElement = Array.from(codePuzzle.children).find(el => el.textContent === data);
+        
+        if (draggedElement) {
+            // Create a new element for the solution area
+            const newElement = document.createElement('div');
+            newElement.className = 'code-line';
+            newElement.textContent = data;
+            
+            // Clear the drop zone text if it's the first element
+            if (codeSolution.textContent === 'Drop code lines here') {
+                codeSolution.innerHTML = '';
+            }
+            
+            codeSolution.appendChild(newElement);
+            draggedElement.remove();
+        }
+    });
+    
+    // Check solution button
+    checkCodeBtn.addEventListener('click', () => {
+        const solutionLines = Array.from(codeSolution.children).map(line => line.textContent);
+        const isCorrect = arraysEqual(solutionLines, codeLines);
+        
+        if (isCorrect) {
+            codeFeedback.textContent = 'Great job! Your code is in the correct order.';
+            codeFeedback.className = 'minigame-feedback success';
+        } else {
+            codeFeedback.textContent = 'Not quite right. Try arranging the code in the correct logical order.';
+            codeFeedback.className = 'minigame-feedback error';
+        }
+    });
+}
+
+// Innovative Development Minigame
+function initInnovationMinigame() {
+    const innovationConcepts = document.getElementById('innovation-concepts');
+    const innovationSolution = document.getElementById('innovation-solution');
+    const submitInnovationBtn = document.getElementById('submit-innovation-btn');
+    const innovationFeedback = document.getElementById('innovation-feedback');
+    
+    // Concepts for innovation
+    const concepts = [
+        'Artificial Intelligence', 'Blockchain', 'Cloud Computing',
+        'Internet of Things', 'Augmented Reality', 'Mobile Apps',
+        'Big Data', 'Social Media', 'Wearable Tech'
+    ];
+    
+    // Create concept cards
+    innovationConcepts.innerHTML = '';
+    concepts.forEach(concept => {
+        const conceptCard = document.createElement('div');
+        conceptCard.className = 'innovation-card';
+        conceptCard.textContent = concept;
+        conceptCard.addEventListener('click', () => {
+            // Toggle selection
+            if (conceptCard.classList.contains('selected')) {
+                conceptCard.classList.remove('selected');
+            } else {
+                // Limit to 3 selections
+                const selectedCards = innovationConcepts.querySelectorAll('.selected');
+                if (selectedCards.length < 3) {
+                    conceptCard.classList.add('selected');
+                }
+            }
+        });
+        
+        innovationConcepts.appendChild(conceptCard);
+    });
+    
+    // Submit innovation button
+    submitInnovationBtn.addEventListener('click', () => {
+        const selectedConcepts = Array.from(innovationConcepts.querySelectorAll('.selected'))
+            .map(card => card.textContent);
+        
+        if (selectedConcepts.length === 3) {
+            // Display the selected concepts in the solution area
+            innovationSolution.innerHTML = `
+                <p>Your Innovation Combines:</p>
+                <ul>
+                    ${selectedConcepts.map(concept => `<li>${concept}</li>`).join('')}
+                </ul>
+            `;
+            
+            // Generate a random "innovation" idea based on the selected concepts
+            const ideas = [
+                `A ${selectedConcepts[0]} platform that uses ${selectedConcepts[1]} to enhance ${selectedConcepts[2]} experiences`,
+                `A new approach to ${selectedConcepts[0]} that leverages ${selectedConcepts[1]} and ${selectedConcepts[2]} for better solutions`,
+                `An integrated ${selectedConcepts[0]} system combined with ${selectedConcepts[1]} to solve ${selectedConcepts[2]} challenges`
+            ];
+            
+            const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
+            
+            innovationFeedback.innerHTML = `
+                <p><strong>Your Innovation Idea:</strong></p>
+                <p>${randomIdea}</p>
+                <p>Creative thinking! This combination could lead to interesting solutions.</p>
+            `;
+            innovationFeedback.className = 'minigame-feedback success';
+        } else {
+            innovationFeedback.textContent = 'Please select exactly 3 concepts to combine for your innovation.';
+            innovationFeedback.className = 'minigame-feedback error';
+        }
+    });
+}
+
+// Network & Systems Engineering Minigame
+function initNetworkMinigame() {
+    const networkPuzzle = document.getElementById('network-puzzle');
+    const checkNetworkBtn = document.getElementById('check-network-btn');
+    const networkFeedback = document.getElementById('network-feedback');
+    
+    // Network devices
+    const devices = [
+        { id: 'router', name: 'Router' },
+        { id: 'switch', name: 'Switch' },
+        { id: 'server', name: 'Server' },
+        { id: 'pc1', name: 'PC 1' },
+        { id: 'pc2', name: 'PC 2' }
+    ];
+    
+    // Create the network puzzle
+    networkPuzzle.innerHTML = '';
+    
+    // Create device nodes
+    const deviceNodesContainer = document.createElement('div');
+    deviceNodesContainer.className = 'network-nodes-container';
+    
+    devices.forEach(device => {
+        const node = document.createElement('div');
+        node.className = 'network-node';
+        node.id = device.id;
+        node.textContent = device.name;
+        node.dataset.connected = 'false';
+        
+        node.addEventListener('click', () => {
+            node.classList.toggle('selected');
+            
+            // Check if two nodes are selected
+            const selectedNodes = networkPuzzle.querySelectorAll('.network-node.selected');
+            if (selectedNodes.length === 2) {
+                connectNodes(selectedNodes[0], selectedNodes[1]);
+            }
+        });
+        
+        deviceNodesContainer.appendChild(node);
+    });
+    
+    // Create connection lines
+    const connectionLinesContainer = document.createElement('div');
+    connectionLinesContainer.className = 'connection-lines-container';
+    
+    const possibleConnections = [
+        { from: 'router', to: 'switch', id: 'router-switch', label: 'Network Connection' },
+        { from: 'switch', to: 'server', id: 'switch-server', label: 'Server Connection' },
+        { from: 'switch', to: 'pc1', id: 'switch-pc1', label: 'PC1 Connection' },
+        { from: 'switch', to: 'pc2', id: 'switch-pc2', label: 'PC2 Connection' }
+    ];
+    
+    possibleConnections.forEach(conn => {
+        const line = document.createElement('div');
+        line.className = 'network-line';
+        line.id = conn.id;
+        line.innerHTML = `<span>${conn.label}</span>`;
+        line.dataset.from = conn.from;
+        line.dataset.to = conn.to;
+        line.dataset.connected = 'false';
+        
+        connectionLinesContainer.appendChild(line);
+    });
+    
+    networkPuzzle.appendChild(deviceNodesContainer);
+    networkPuzzle.appendChild(connectionLinesContainer);
+    
+    // Function to connect two nodes
+    function connectNodes(node1, node2) {
+        const id1 = node1.id;
+        const id2 = node2.id;
+        
+        // Find the connection line
+        const connectionId1 = `${id1}-${id2}`;
+        const connectionId2 = `${id2}-${id1}`;
+        
+        const connectionLine = document.getElementById(connectionId1) || document.getElementById(connectionId2);
+        
+        if (connectionLine) {
+            connectionLine.classList.add('connected');
+            connectionLine.dataset.connected = 'true';
+            
+            // Mark the nodes as connected
+            node1.dataset.connected = 'true';
+            node2.dataset.connected = 'true';
+        }
+        
+        // Clear selection
+        node1.classList.remove('selected');
+        node2.classList.remove('selected');
+    }
+    
+    // Check network button
+    checkNetworkBtn.addEventListener('click', () => {
+        const connectedLines = connectionLinesContainer.querySelectorAll('.network-line[data-connected="true"]');
+        
+        if (connectedLines.length === possibleConnections.length) {
+            networkFeedback.innerHTML = `
+                <p>Great job! You've successfully connected all devices in the network.</p>
+                <p>This is a star topology with the switch at the center, which is commonly used in office networks.</p>
+            `;
+            networkFeedback.className = 'minigame-feedback success';
+        } else {
+            networkFeedback.innerHTML = `
+                <p>Your network is incomplete. You need to connect all devices to create a working network.</p>
+                <p>You've made ${connectedLines.length} of ${possibleConnections.length} required connections.</p>
+            `;
+            networkFeedback.className = 'minigame-feedback error';
+        }
+    });
+}
+
+// Business & Data Management Minigame
+function initDataMinigame() {
+    const dataItems = document.getElementById('data-items');
+    const structuredData = document.getElementById('structured-data');
+    const unstructuredData = document.getElementById('unstructured-data');
+    const checkDataBtn = document.getElementById('check-data-btn');
+    const dataFeedback = document.getElementById('data-feedback');
+    
+    // Data examples
+    const data = [
+        { text: 'SQL Database Records', type: 'structured' },
+        { text: 'Excel Spreadsheet', type: 'structured' },
+        { text: 'CSV File', type: 'structured' },
+        { text: 'JSON Data', type: 'structured' },
+        { text: 'XML Document', type: 'structured' },
+        { text: 'Email Text', type: 'unstructured' },
+        { text: 'Social Media Posts', type: 'unstructured' },
+        { text: 'PDF Document', type: 'unstructured' },
+        { text: 'Audio Recording', type: 'unstructured' },
+        { text: 'Video Content', type: 'unstructured' }
+    ];
+    
+    // Shuffle data
+    const shuffledData = [...data].sort(() => Math.random() - 0.5);
+    
+    // Create data cards
+    dataItems.innerHTML = '';
+    shuffledData.forEach(item => {
+        const dataCard = document.createElement('div');
+        dataCard.className = 'data-card';
+        dataCard.textContent = item.text;
+        dataCard.dataset.type = item.type;
+        dataCard.draggable = true;
+        
+        // Add drag events
+        dataCard.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', JSON.stringify(item));
+            dataCard.classList.add('dragging');
+        });
+        
+        dataCard.addEventListener('dragend', () => {
+            dataCard.classList.remove('dragging');
+        });
+        
+        dataItems.appendChild(dataCard);
+    });
+    
+    // Set up drop zones
+    [structuredData, unstructuredData].forEach(dropZone => {
+        dropZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropZone.classList.add('hover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('hover');
+        });
+        
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('hover');
+            
+            try {
+                const item = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const draggedElement = Array.from(dataItems.children).find(el => 
+                    el.textContent === item.text && el.dataset.type === item.type);
+                
+                if (draggedElement) {
+                    const newElement = document.createElement('div');
+                    newElement.className = 'data-card';
+                    newElement.textContent = item.text;
+                    newElement.dataset.type = item.type;
+                    
+                    dropZone.appendChild(newElement);
+                    draggedElement.remove();
+                }
+            } catch (err) {
+                console.error('Error parsing dragged data:', err);
+            }
+        });
+    });
+    
+    // Check data sorting button
+    checkDataBtn.addEventListener('click', () => {
+        const structuredItems = Array.from(structuredData.querySelectorAll('.data-card'));
+        const unstructuredItems = Array.from(unstructuredData.querySelectorAll('.data-card'));
+        
+        let correctCount = 0;
+        let totalItems = structuredItems.length + unstructuredItems.length;
+        
+        structuredItems.forEach(item => {
+            if (item.dataset.type === 'structured') {
+                correctCount++;
+            }
+        });
+        
+        unstructuredItems.forEach(item => {
+            if (item.dataset.type === 'unstructured') {
+                correctCount++;
+            }
+        });
+        
+        if (totalItems === 0) {
+            dataFeedback.textContent = 'Please sort some data items first.';
+            dataFeedback.className = 'minigame-feedback error';
+        } else if (correctCount === totalItems) {
+            dataFeedback.innerHTML = `
+                <p>Perfect! You've correctly sorted all ${totalItems} data items.</p>
+                <p>Understanding the difference between structured and unstructured data is key for effective data management.</p>
+            `;
+            dataFeedback.className = 'minigame-feedback success';
+        } else {
+            const accuracy = Math.round((correctCount / totalItems) * 100);
+            dataFeedback.innerHTML = `
+                <p>You got ${correctCount} out of ${totalItems} items correct (${accuracy}% accuracy).</p>
+                <p>Remember: Structured data fits into predefined formats and databases, while unstructured data is more free-form.</p>
+            `;
+            dataFeedback.className = 'minigame-feedback error';
+        }
+    });
+}
+
+// Security Management Minigame
+function initSecurityMinigame() {
+    const securityItems = document.getElementById('security-items');
+    const checkSecurityBtn = document.getElementById('check-security-btn');
+    const securityFeedback = document.getElementById('security-feedback');
+    
+    // Security scenarios
+    const securityScenarios = [
+        { text: 'Login form without HTTPS encryption', isVulnerable: true },
+        { text: 'Password stored as plain text in database', isVulnerable: true },
+        { text: 'Form without input validation', isVulnerable: true },
+        { text: 'Software with default admin credentials', isVulnerable: true },
+        { text: 'Public WiFi without a password', isVulnerable: true },
+        { text: 'Two-factor authentication for login', isVulnerable: false },
+        { text: 'Regular security updates', isVulnerable: false },
+        { text: 'Password hashing with salt', isVulnerable: false },
+        { text: 'Data backups stored offline', isVulnerable: false },
+        { text: 'Network with firewall protection', isVulnerable: false }
+    ];
+    
+    // Shuffle scenarios
+    const shuffledScenarios = [...securityScenarios].sort(() => Math.random() - 0.5);
+    
+    // Create security items
+    securityItems.innerHTML = '';
+    shuffledScenarios.forEach(scenario => {
+        const item = document.createElement('div');
+        item.className = 'security-item';
+        if (scenario.isVulnerable) {
+            item.classList.add('vulnerable');
+        }
+        item.textContent = scenario.text;
+        item.dataset.vulnerable = scenario.isVulnerable;
+        
+        item.addEventListener('click', () => {
+            item.classList.toggle('selected');
+        });
+        
+        securityItems.appendChild(item);
+    });
+    
+    // Check security button
+    checkSecurityBtn.addEventListener('click', () => {
+        const selectedItems = securityItems.querySelectorAll('.security-item.selected');
+        const vulnerableItems = securityItems.querySelectorAll('.security-item.vulnerable');
+        
+        let correctSelections = 0;
+        let incorrectSelections = 0;
+        
+        selectedItems.forEach(item => {
+            if (item.dataset.vulnerable === 'true') {
+                correctSelections++;
+                item.classList.add('correct');
+            } else {
+                incorrectSelections++;
+            }
+        });
+        
+        const vulnerableCount = vulnerableItems.length;
+        const missedVulnerabilities = vulnerableCount - correctSelections;
+        
+        if (selectedItems.length === 0) {
+            securityFeedback.textContent = 'Please select the items you think are security vulnerabilities.';
+            securityFeedback.className = 'minigame-feedback error';
+        } else if (correctSelections === vulnerableCount && incorrectSelections === 0) {
+            securityFeedback.innerHTML = `
+                <p>Excellent! You identified all ${vulnerableCount} security vulnerabilities correctly.</p>
+                <p>You have a great eye for security issues!</p>
+            `;
+            securityFeedback.className = 'minigame-feedback success';
+        } else {
+            securityFeedback.innerHTML = `
+                <p>You found ${correctSelections} out of ${vulnerableCount} vulnerabilities.</p>
+                <p>You missed ${missedVulnerabilities} vulnerabilities and incorrectly selected ${incorrectSelections} secure items.</p>
+                <p>Security experts need to be able to identify all potential security risks.</p>
+            `;
+            securityFeedback.className = 'minigame-feedback error';
+            
+            // Highlight missed vulnerabilities
+            vulnerableItems.forEach(item => {
+                if (!item.classList.contains('selected')) {
+                    item.classList.add('vulnerable');
+                }
+            });
+        }
+    });
+}
+
+// Helper function to compare arrays
+function arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+} 

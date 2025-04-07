@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your HBO-ICT Career Results - De Haagse Hogeschool</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .results-container {
+            min-height: auto;
+            height: auto;
+            overflow-y: auto;
+            padding-bottom: 40px;
+        }
+        
+        .location-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .den-haag {
+            background-color: var(--dhh-blue);
+            color: white;
+        }
+        
+        .zoetermeer {
+            background-color: var(--dhh-green);
+            color: white;
+        }
+        
+        .delft {
+            background-color: var(--dhh-yellow);
+            color: var(--dhh-dark-gray);
+        }
+        
+        .response-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .response-question {
+            font-weight: bold;
+            color: var(--dhh-dark-blue);
+            margin-bottom: 8px;
+        }
+        
+        .response-answer {
+            color: var(--dhh-dark-gray);
+            padding: 8px;
+            background-color: var(--dhh-gray);
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .response-explanation {
+            font-style: italic;
+            border-left: 3px solid var(--dhh-blue);
+            padding-left: 12px;
+            margin-top: 8px;
+            color: #555;
+        }
+        
+        .chart-bar-animated {
+            position: relative;
+            animation: expandBar 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        @keyframes expandBar {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container results-container">
+        <div id="results-screen" class="screen active">
+            <div class="logo-container">
+                <img src="img/download.png" class="logo">
+            </div>
+            
+            <div id="results-content"></div>
+            
+            <div class="cta-container">
+                <p>Want to learn more about HBO-ICT at De Haagse Hogeschool?</p>
+                <a href="https://www.dehaagsehogeschool.nl/opleidingen/hbo-bachelor/hbo-ict" target="_blank" class="cta-button">Visit HBO-ICT Website</a>
+            </div>
+            
+            <button id="back-to-menu" class="primary-button">Back to Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get results data from sessionStorage
+            const results = JSON.parse(sessionStorage.getItem('quizResults'));
+            const resultsContent = document.getElementById('results-content');
+            
+            if (!results) {
+                resultsContent.innerHTML = '<p>No results found. Please take the quiz first.</p>';
+                return;
+            }
+            
+            // Load the user's name and generate content
+            const userName = results.name || 'Your';
+            generateResults(userName, results);
+            
+            // Handle back button
+            document.getElementById('back-to-menu').addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        });
+        
+        function generateResults(userName, results) {
+            const resultsContent = document.getElementById('results-content');
+            
+            // Get career locations
+            const careerLocations = {
+                'Software Engineering': 'den-haag',
+                'Business & Data Management': 'den-haag',
+                'Security Management': 'zoetermeer',
+                'Innovative Development': 'zoetermeer',
+                'Network & Systems Engineering': 'delft'
+            };
+            
+            const locationNames = {
+                'den-haag': 'Den Haag',
+                'zoetermeer': 'Zoetermeer',
+                'delft': 'Delft'
+            };
+            
+            const recommendedCareer = results.recommendedCareer;
+            const careerLocation = careerLocations[recommendedCareer.title] || 'den-haag';
+            
+            // Generate header with recommended career
+            let content = `<h2>${userName}'s HBO-ICT Career Profile</h2>`;
+            
+            // Add career recommendation
+            content += '<div class="career-recommendation">';
+            content += `<h3>Recommended IT Career Path: ${recommendedCareer.title} 
+                      <span class="location-tag ${careerLocation}">${locationNames[careerLocation]}</span></h3>`;
+            content += `<p>${recommendedCareer.description}</p>`;
+            content += '</div>';
+            
+            // Generate score chart
+            content += '<div class="career-scores">';
+            content += '<h3>How You Scored:</h3>';
+            content += '<div class="score-chart">';
+            
+            // Sort career paths by score (descending)
+            const sortedPaths = [...results.allCareerScores].sort((a, b) => b.score - a.score);
+            
+            sortedPaths.forEach((path, index) => {
+                const maxScore = results.answers.length;
+                const percentage = (path.score / maxScore) * 100;
+                const pathLocation = careerLocations[path.career] || 'den-haag';
+                
+                content += `<div class="chart-bar-container" style="--result-index: ${index}">
+                    <div class="chart-label">${path.career} 
+                      <span class="location-tag ${pathLocation}">${locationNames[pathLocation]}</span>
+                    </div>
+                    <div class="chart-bar-wrapper">
+                        <div class="chart-bar chart-bar-animated" style="width: ${percentage}%"></div>
+                    </div>
+                    <div class="chart-score">${path.score}/${maxScore}</div>
+                </div>`;
+            });
+            
+            content += '</div></div>';
+            
+            // Add response summary
+            content += '<div class="response-summary">';
+            content += '<h3>Your Responses:</h3>';
+            
+            results.answers.forEach((response, index) => {
+                content += `<div class="response-card">
+                    <div class="response-question">Question ${index + 1}: ${response.question}</div>
+                    <div class="response-answer">${response.answer}</div>`;
+                
+                if (response.explanation) {
+                    content += `<div class="response-explanation">"${response.explanation}"</div>`;
+                }
+                
+                content += '</div>';
+            });
+            
+            content += '</div>';
+            
+            resultsContent.innerHTML = content;
+        }
+    </script>
+</body>
+</html> 
