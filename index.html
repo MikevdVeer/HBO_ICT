@@ -17,23 +17,15 @@
             <button id="start-button">Start Challenge</button>
         </div>
 
-        <div id="level-select" class="screen">
-            <h2>Choose Your Challenge</h2>
-            <div class="level-buttons">
-                <button class="level-button" data-level="1">Level 1: HBO-ICT Basics</button>
-                <button class="level-button" data-level="2">Level 2: HBO-ICT Specializations</button>
-                <button class="level-button" data-level="3">Level 3: HBO-ICT Career Paths</button>
-            </div>
-            <button class="back-button">Back to Menu</button>
-        </div>
-
         <div id="game-screen" class="screen">
-            <div id="level-title">Level 1</div>
             <div id="question-container">
                 <div id="question-text">Question goes here</div>
                 <div id="answer-options"></div>
+                <div id="explanation-container" style="display: none;">
+                    <textarea id="explanation-textarea" placeholder="Please provide your explanation..."></textarea>
+                    <button id="submit-explanation-btn">Submit Explanation</button>
+                </div>
             </div>
-            <div id="minigame-container"></div>
             <div id="progress-bar">
                 <div id="progress-fill"></div>
             </div>
@@ -42,14 +34,12 @@
 
         <div id="level-complete" class="screen">
             <h2>Challenge Complete!</h2>
-            <div id="score-display">Score: 0</div>
             <div id="feedback"></div>
             <div class="cta-container">
                 <p>Want to learn more about HBO-ICT at De Haagse Hogeschool?</p>
                 <a href="https://www.dehaagsehogeschool.nl/opleidingen/hbo-bachelor/hbo-ict" target="_blank" class="cta-button">Visit HBO-ICT Website</a>
             </div>
-            <button id="next-level-button">Next Challenge</button>
-            <button class="back-button">Challenge Select</button>
+            <button id="next-level-button">Back to Menu</button>
         </div>
     </div>
 
